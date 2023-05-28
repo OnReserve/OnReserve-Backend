@@ -1,21 +1,25 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+const prisma = new PrismaClient();
 dotenv.config();
-const loginController = { login };
 const secret = process.env.JWT_SECRET;
-function login(req, res) {
-    console.log(secret);
-    if (req.body.username && req.body.password) {
-        const username = req.body.username;
-        const password = req.body.password;
-        const id = req.body.id;
-        const token = jwt.sign({ username: username, adminId: id }, secret);
-        res.status(200).json({ message: "Authentication successful!", token: token });
+async function login(req, res) {
+    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({
+        where: { email },
+    });
+    if (!user) {
+        return res.status(401).json({ message: "Invalid email or password" });
     }
-    else {
-        res.status(401).json({ message: "Login Authentication failed!" });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+        return res.status(401).json({ message: "Invalid email or password" });
     }
+    const accessToken = jwt.sign({ userId: user.id }, secret);
+    return res.json({ "token": accessToken });
 }
-loginController.login = login;
+const loginController = { login };
 export default loginController;
 //# sourceMappingURL=login_controller.js.map

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
+
 const secret:string = process.env.JWT_SECRET!;
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {

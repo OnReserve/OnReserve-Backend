@@ -1,4 +1,3 @@
-
 datasource db {
   provider = "mysql"
   url      = "mysql://root:@localhost:3306/onreserve"
@@ -8,8 +7,186 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model BookingHistory {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  bookingId  Int
+  createdAt  DateTime?
+  updatedAt  DateTime?
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id            Int             @id @default(autoincrement())
+  userId        Int
+  eventId       Int
+  completed     Boolean
+  bookingToken  String
+  qrcode        String
+  economyCount  Int
+  vipCount      Int
+  createdAt     DateTime?
+  updatedAt     DateTime?
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event         Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  histories     BookingHistory[]
+}
+
+model Category {
+  id        Int           @id @default(autoincrement())
+  name      String
+  createdAt DateTime?
+  updatedAt DateTime?
+  events    CategoryEvent[]
+}
+
+model CategoryEvent {
+  id         Int      @id @default(autoincrement())
+  categoryId Int
+  eventId    Int
+  createdAt  DateTime?
+  updatedAt  DateTime?
+  category   Category @relation(fields: [categoryId], references: [id])
+  event      Event    @relation(fields: [eventId], references: [id])
+}
+
+model Company {
+  id        Int           @id @default(autoincrement())
+  owner     Int
+  name      String
+  bio       String
+  profPic   String?
+  coverPic  String?
+  rating    String
+  createdAt DateTime?
+  updatedAt DateTime?
+  user      User          @relation(fields: [owner], references: [id], onDelete: Cascade)
+  events    Event[]
+  users     CompanyUser[]
+}
+
+model CompanyUser {
+  id         Int     @id @default(autoincrement())
+  companyId  Int
+  userId     Int
+  createdAt  DateTime?
+  updatedAt  DateTime?
+  company    Company @relation(fields: [companyId], references: [id])
+  user       User    @relation(fields: [userId], references: [id])
+}
+
+model EventGallery {
+  id        Int     @id @default(autoincrement())
+  eventId   Int
+  eventPhoto String
+  createdAt DateTime?
+  updatedAt DateTime?
+  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model EventLocation {
+  id        Int     @id @default(autoincrement())
+  eventId   Int
+  city      String
+  street    String
+  venue     String
+  latitude  Float
+  longitude Float
+  createdAt DateTime?
+  updatedAt DateTime?
+  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model EventReview {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  eventId   Int
+  comment   String
+  stars     Int
+  createdAt DateTime?
+  updatedAt DateTime?
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id             Int             @id @default(autoincrement())
+  userId         Int
+  companyId      Int
+  title          String
+  desc           String
+  createdAt      DateTime?
+  updatedAt      DateTime?
+  eventStartTime DateTime
+  eventEndTime   DateTime
+  eventDeadline  DateTime
+  approved       Boolean
+  approvedBy     Int?
+  economySeats   Int
+  economyPrice   Int
+  vipSeats       Int
+  vipPrice       Int
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company        Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  approver       User?           @relation("UserApprovedEvents", fields: [approvedBy], references: [id], onDelete: Cascade)
+  categories     CategoryEvent[]
+  galleries      EventGallery[]
+  locations      EventLocation[]
+  reviews        EventReview[]
+  bookings       Booking[]
+}
+
+
+model PersonalAccessToken {
+  id            Int       @id @default(autoincrement())
+  tokenableType String
+  tokenableId   Int
+  name          String
+  token         String
+  abilities     String?
+  lastUsedAt    DateTime?
+  createdAt     DateTime?
+  updatedAt     DateTime?
+  user_id       Int
+  user          User      @relation(fields: user_id, references: id)
+}
+
+model Profile {
+  id          Int     @id @default(autoincrement())
+  phoneNumber String
+  profilePic  String
+  bio         String
+  createdAt   DateTime?
+  updatedAt   DateTime?
+  userId      Int @unique
+  user        User    @relation(fields:[userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordReset {
+  email     String   @id
+  token     String
+  createdAt DateTime?
+  user      User     @relation(fields: [email], references: [email])
+}
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+  id                     Int                   @id @default(autoincrement())
+  fname                  String
+  lname                  String
+  email                  String                @unique
+  emailVerifiedAt        DateTime?
+  password               String
+  rememberToken          String?
+  createdAt              DateTime?
+  updatedAt              DateTime?
+  bookingHistories       BookingHistory[]
+  bookings               Booking[]
+  companies              Company[]
+  companyUsers           CompanyUser[]
+  eventReviews           EventReview[]
+  events                 Event[]
+  eventsApprovedBy       Event[]               @relation("UserApprovedEvents")
+  profile                Profile?
+  passwordResets         PasswordReset[]
+  personalAccessTokens   PersonalAccessToken[]
 }

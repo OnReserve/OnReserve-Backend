@@ -1,16 +1,15 @@
 import {Router} from 'express';
 import { auth } from '../Controller/auth.controller.js';
 import loginController from '../Controller/login_controller.js';
+import registerController from '../Controller/register_controller.js';
 
 const router = Router();
 
 
 // Auth Routes
-router.post("/auth/register", );
+router.post("/auth/register", registerController.register);
 router.post("/auth/login", loginController.login);
 router.post("/auth/logout", );
-
-
 
 
 // Authentication middleware 
