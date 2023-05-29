@@ -1,10 +1,13 @@
-import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import dotenv from "dotenv";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 dotenv.config();
 async function register(req, res) {
     const { fname, lname, email, password } = req.body;
+    if (!fname || !lname || !email || !password) {
+        return res.status(400).json({ message: "Incomplete Request" });
+    }
     const hashedPassword = await bcrypt.hash(password, 8);
     try {
         const user = await prisma.user.create({
