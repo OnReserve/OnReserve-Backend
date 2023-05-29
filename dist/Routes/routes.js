@@ -1,18 +1,21 @@
-import { Router } from 'express';
-import { auth } from '../Controller/auth.controller.js';
-import loginController from '../Controller/login_controller.js';
-import registerController from '../Controller/register_controller.js';
+import { Router } from "express";
+import { auth } from "../Controller/Auth/auth.controller.js";
+import registerController from "../Controller/Auth/register.controller.js";
+import loginController from "../Controller/Auth/login.controller.js";
+import logoutController from "../Controller/Auth/logout.controller.js";
+import profileController from "../Controller/Profile/profile.controller.js";
 const router = Router();
 // Auth Routes
 router.post("/auth/register", registerController.register);
 router.post("/auth/login", loginController.login);
-router.post("/auth/logout");
-// Authentication middleware 
+router.post("/auth/logout", logoutController.logout);
+// Authentication middleware
 router.use(auth);
 // Profile Routes
-router.get("/profile/:id");
+router.get("/profile/:id", profileController.getProfile);
 router.post("/profile/:id/edit");
-// Event Routes 
+router.post("/profile/:id/upload");
+// Event Routes
 router.get("/events"); // Get all events, or get events by category
 router.post("/event/add");
 router.get("/event/:id");

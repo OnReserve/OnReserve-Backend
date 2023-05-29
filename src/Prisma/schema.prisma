@@ -8,47 +8,47 @@ generator client {
 }
 
 model BookingHistory {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  bookingId  Int
-  createdAt  DateTime?
-  updatedAt  DateTime?
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  bookingId Int
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 }
 
 model Booking {
-  id            Int             @id @default(autoincrement())
-  userId        Int
-  eventId       Int
-  completed     Boolean
-  bookingToken  String
-  qrcode        String
-  economyCount  Int
-  vipCount      Int
-  createdAt     DateTime?
-  updatedAt     DateTime?
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  event         Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  histories     BookingHistory[]
+  id           Int              @id @default(autoincrement())
+  userId       Int
+  eventId      Int
+  completed    Boolean
+  bookingToken String
+  qrcode       String
+  economyCount Int
+  vipCount     Int
+  createdAt    DateTime?        @default(now())
+  updatedAt    DateTime?        @updatedAt
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event        Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  histories    BookingHistory[]
 }
 
 model Category {
-  id        Int           @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   name      String
-  createdAt DateTime?
-  updatedAt DateTime?
+  createdAt DateTime?       @default(now())
+  updatedAt DateTime?       @updatedAt
   events    CategoryEvent[]
 }
 
 model CategoryEvent {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   categoryId Int
   eventId    Int
-  createdAt  DateTime?
-  updatedAt  DateTime?
-  category   Category @relation(fields: [categoryId], references: [id])
-  event      Event    @relation(fields: [eventId], references: [id])
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+  category   Category  @relation(fields: [categoryId], references: [id])
+  event      Event     @relation(fields: [eventId], references: [id])
 }
 
 model Company {
@@ -59,34 +59,34 @@ model Company {
   profPic   String?
   coverPic  String?
   rating    String
-  createdAt DateTime?
-  updatedAt DateTime?
+  createdAt DateTime?     @default(now())
+  updatedAt DateTime?     @updatedAt
   user      User          @relation(fields: [owner], references: [id], onDelete: Cascade)
   events    Event[]
   users     CompanyUser[]
 }
 
 model CompanyUser {
-  id         Int     @id @default(autoincrement())
-  companyId  Int
-  userId     Int
-  createdAt  DateTime?
-  updatedAt  DateTime?
-  company    Company @relation(fields: [companyId], references: [id])
-  user       User    @relation(fields: [userId], references: [id])
+  id        Int       @id @default(autoincrement())
+  companyId Int
+  userId    Int
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  company   Company   @relation(fields: [companyId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 }
 
 model EventGallery {
-  id        Int     @id @default(autoincrement())
-  eventId   Int
+  id         Int       @id @default(autoincrement())
+  eventId    Int
   eventPhoto String
-  createdAt DateTime?
-  updatedAt DateTime?
-  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt  DateTime?
+  updatedAt  DateTime?
+  event      Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
 
 model EventLocation {
-  id        Int     @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   eventId   Int
   city      String
   street    String
@@ -95,19 +95,19 @@ model EventLocation {
   longitude Float
   createdAt DateTime?
   updatedAt DateTime?
-  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
 
 model EventReview {
-  id        Int     @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   userId    Int
   eventId   Int
   comment   String
   stars     Int
   createdAt DateTime?
   updatedAt DateTime?
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
 
 model Event {
@@ -116,8 +116,8 @@ model Event {
   companyId      Int
   title          String
   desc           String
-  createdAt      DateTime?
-  updatedAt      DateTime?
+  createdAt      DateTime?       @default(now())
+  updatedAt      DateTime?       @updatedAt
   eventStartTime DateTime
   eventEndTime   DateTime
   eventDeadline  DateTime
@@ -137,56 +137,59 @@ model Event {
   bookings       Booking[]
 }
 
-
 model PersonalAccessToken {
-  id            Int       @id @default(autoincrement())
+  userId        Int       @unique
   tokenableType String
   tokenableId   Int
   name          String
   token         String
   abilities     String?
   lastUsedAt    DateTime?
-  createdAt     DateTime?
-  updatedAt     DateTime?
-  user_id       Int
-  user          User      @relation(fields: user_id, references: id)
-}
+  createdAt     DateTime? @default(now())
+  updatedAt     DateTime? @updatedAt
+  user          User      @relation(fields: userId, references: id)
 
-model Profile {
-  id          Int     @id @default(autoincrement())
-  phoneNumber String
-  profilePic  String
-  bio         String
-  createdAt   DateTime?
-  updatedAt   DateTime?
-  userId      Int @unique
-  user        User    @relation(fields:[userId], references: [id], onDelete: Cascade)
+  @@id([userId])
 }
 
 model PasswordReset {
-  email     String   @id
+  email     String    @id
   token     String
-  createdAt DateTime?
-  user      User     @relation(fields: [email], references: [email])
+  createdAt DateTime? @default(now())
+  user      User      @relation(fields: [email], references: [email])
 }
+
+model Profile {
+  userId      Int       @unique
+  phoneNumber String?
+  profilePic  String?
+  bio         String?
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+  user        User?
+
+  @@id([userId])
+}
+
 model User {
-  id                     Int                   @id @default(autoincrement())
-  fname                  String
-  lname                  String
-  email                  String                @unique
-  emailVerifiedAt        DateTime?
-  password               String
-  rememberToken          String?
-  createdAt              DateTime?
-  updatedAt              DateTime?
-  bookingHistories       BookingHistory[]
-  bookings               Booking[]
-  companies              Company[]
-  companyUsers           CompanyUser[]
-  eventReviews           EventReview[]
-  events                 Event[]
-  eventsApprovedBy       Event[]               @relation("UserApprovedEvents")
-  profile                Profile?
-  passwordResets         PasswordReset[]
-  personalAccessTokens   PersonalAccessToken[]
+  id                   Int                   @id @default(autoincrement())
+  fname                String
+  lname                String
+  email                String                @unique
+  emailVerifiedAt      DateTime?
+  password             String
+  rememberToken        String?
+  createdAt            DateTime?             @default(now())
+  updatedAt            DateTime?             @updatedAt
+  bookingHistories     BookingHistory[]
+  bookings             Booking[]
+  companies            Company[]
+  companyUsers         CompanyUser[]
+  eventReviews         EventReview[]
+  events               Event[]
+  eventsApprovedBy     Event[]               @relation("UserApprovedEvents")
+  profileId            Int?                  @unique
+  profile              Profile?              @relation(fields: [profileId], references: [userId], onDelete: Cascade)
+  passwordResets       PasswordReset[]
+  personalAccessTokens PersonalAccessToken[]
 }
