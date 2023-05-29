@@ -4,6 +4,7 @@ import registerController from "../Controller/Auth/register.controller.js";
 import loginController from "../Controller/Auth/login.controller.js";
 import logoutController from "../Controller/Auth/logout.controller.js";
 import profileController from "../Controller/Profile/profile.controller.js";
+import { companyController } from "../Controller/company.controller.js";
 const router = Router();
 // Auth Routes
 router.post("/auth/register", registerController.register);
@@ -32,6 +33,10 @@ router.delete("/event/:id/ratings/:id"); // Delete a rating for an event
 // Companies Routes
 router.get("/companies"); // Get all companies, or get companies by category
 router.post("/company/add", companyController.addCompany);
+router.get("/company/:id");
+router.put("/company/:id");
+router.patch("/company/:id");
+router.delete("/company/:id");
 router.get("/company/:id");
 router.put("/company/:id");
 router.patch("/company/:id");
