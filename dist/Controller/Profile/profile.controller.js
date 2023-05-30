@@ -38,6 +38,7 @@ async function editProfile(req, res) {
                 userId,
                 phoneNumber,
                 bio,
+                profilePic: "",
             },
         });
         return res.status(200).json(newProfile);

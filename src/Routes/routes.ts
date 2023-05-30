@@ -5,6 +5,10 @@ import loginController from "../Controller/Auth/login.controller.js";
 import logoutController from "../Controller/Auth/logout.controller.js";
 import profileController from "../Controller/Profile/profile.controller.js";
 import { companyController } from "../Controller/company.controller.js";
+import {
+	companyFilesMiddleware,
+	upload,
+} from "../Middleware/file.middleware.js";
 
 const router = Router();
 
@@ -40,17 +44,25 @@ router.patch("/event/:id/ratings/:id"); // Edit a rating for an event
 router.delete("/event/:id/ratings/:id"); // Delete a rating for an event
 
 // Companies Routes
-router.get("/companies"); // Get all companies, or get companies by category
-router.post("/company/add", companyController.addCompany);
+router.get("/companies", companyController.getUserCompanies); // Get all companies, or get companies by category
+router.post(
+	"/company/add",
+	companyFilesMiddleware,
+	auth,
+	companyController.addCompany
+);
 
-router.get("/company/:id");
-router.put("/company/:id");
+router.get("/company/:id", companyController.getCompany);
+
+router.put(
+	"/company/:id",
+	companyFilesMiddleware,
+	auth,
+	companyController.editCompany
+); // edit company
+
 router.patch("/company/:id");
-router.delete("/company/:id");
-router.get("/company/:id");
-router.put("/company/:id");
-router.patch("/company/:id");
-router.delete("/company/:id");
+router.delete("/company/:id", companyController.deleteCompany);
 
 // Booking Routes
 router.get("/bookings"); // Get all bookings, or get bookings by category

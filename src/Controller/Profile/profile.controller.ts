@@ -7,65 +7,66 @@ const prisma = new PrismaClient();
 dotenv.config();
 
 async function getProfile(req: Request, res: Response) {
-  const userId = Number(req.params.id);
-  const { user_id } = req.body;
+	const userId = Number(req.params.id);
+	const { user_id } = req.body;
 
-  if (userId !== user_id) {
-    return res.status(401).json({ error: "Unauthorized Access" });
-  }
+	if (userId !== user_id) {
+		return res.status(401).json({ error: "Unauthorized Access" });
+	}
 
-  const profile = await prisma.profile.findUnique({
-    where: {
-      userId: userId,
-    },
-    include: {
-      user: true,
-    },
-  });
+	const profile = await prisma.profile.findUnique({
+		where: {
+			userId: userId,
+		},
+		include: {
+			user: true,
+		},
+	});
 
-  if (!profile) {
-    return res.status(404).json({ error: "Profile not found" });
-  }
+	if (!profile) {
+		return res.status(404).json({ error: "Profile not found" });
+	}
 
-  return res.status(200).json(profile);
+	return res.status(200).json(profile);
 }
 
 async function editProfile(req: Request, res: Response) {
-  const userId = Number(req.params.id);
-  const { user_id, phoneNumber, bio } = req.body;
+	const userId = Number(req.params.id);
+	const { user_id, phoneNumber, bio } = req.body;
 
-  if (userId !== user_id) {
-    return res.status(401).json({ error: "Unauthorized Access" });
-  }
+	if (userId !== user_id) {
+		return res.status(401).json({ error: "Unauthorized Access" });
+	}
 
-  const profile = await prisma.profile.findUnique({
-    where: {
-      userId: userId,
-    },
-  });
+	const profile = await prisma.profile.findUnique({
+		where: {
+			userId: userId,
+		},
+	});
 
-  if (!profile) {
-    const newProfile = await prisma.profile.create({
-      data: {
-        userId,
-        phoneNumber,
-        bio,
-      },
-    });
-    return res.status(200).json(newProfile);
-  }
+	if (!profile) {
+		const newProfile = await prisma.profile.create({
+			data: {
+				userId,
+				phoneNumber,
+				bio,
+				profilePic: "",
+			},
+		});
+		return res.status(200).json(newProfile);
+	}
 
-  const updatedProfile = await prisma.profile.update({
-    where: {
-      userId: userId,
-    },
-    data: {
-      phoneNumber,
-      bio,
-    },
-  });
+	const updatedProfile = await prisma.profile.update({
+		where: {
+			userId: userId,
+		},
+		data: {
+			phoneNumber,
+			bio,
+		},
+	});
 
-  return res.status(200).json(updatedProfile);
+	return res.status(200).json(updatedProfile);
 }
 
 const profileController = { getProfile, editProfile };
