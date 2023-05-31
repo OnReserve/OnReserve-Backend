@@ -193,10 +193,24 @@ const deleteCompany = async (req: Request, res: Response) => {
 		.json({ message: "Deleted Successfully", data: deletedCompany });
 };
 
+const searchCompany = async (req: Request, res: Response) => {
+	const { keyword } = req.params;
+	const companies = await prisma.company.findMany({
+		where: {
+			name: {
+				contains: keyword,
+			},
+		},
+	});
+
+	return res.status(200).json(companies);
+};
+
 export const companyController = {
 	addCompany,
 	editCompany,
 	getCompany,
 	getUserCompanies,
 	deleteCompany,
+	searchCompany,
 };

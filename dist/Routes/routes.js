@@ -5,7 +5,8 @@ import loginController from "../Controller/Auth/login.controller.js";
 import logoutController from "../Controller/Auth/logout.controller.js";
 import profileController from "../Controller/Profile/profile.controller.js";
 import { companyController } from "../Controller/company.controller.js";
-import { companyFilesMiddleware, } from "../Middleware/file.middleware.js";
+import { companyFilesMiddleware, eventFilesMiddleware, } from "../Middleware/file.middleware.js";
+import { eventController } from "../Controller/events.controller.js";
 const router = Router();
 // Auth Routes
 router.post("/auth/register", registerController.register);
@@ -18,12 +19,13 @@ router.get("/profile/:id", profileController.getProfile);
 router.post("/profile/:id/edit");
 router.post("/profile/:id/upload");
 // Event Routes
-router.get("/events"); // Get all events, or get events by category
-router.post("/event/add");
-router.get("/event/:id");
-router.post("/event/:id");
-router.patch("/event/:id");
-router.delete("/event/:id");
+router.get("/events/popular"); // Get all events, or get events by category
+router.get("/events/upcoming", eventController.getUpcomingEvents);
+router.get("/events/search/:keyword", eventController.searchEvent);
+router.post("/event/add", eventFilesMiddleware, auth, eventController.addEvent);
+router.get("/event/:id", eventController.getEventDetails); // Event Details
+router.post("/event/:id", eventController.editEvent); // Edit
+router.delete("/event/:id", eventController.deleteEvent);
 // Review Routes
 router.get("/event/:id/ratings"); // Get all ratings for an event
 router.post("/event/:id/ratings"); // Add a rating to an event
@@ -36,7 +38,7 @@ router.get("/companies", companyController.getUserCompanies); // Get all compani
 router.post("/company/add", companyFilesMiddleware, auth, companyController.addCompany);
 router.get("/company/:id", companyController.getCompany);
 router.put("/company/:id", companyFilesMiddleware, auth, companyController.editCompany); // edit company
-router.patch("/company/:id");
+router.get("/company/search/:keyword", companyController.searchCompany);
 router.delete("/company/:id", companyController.deleteCompany);
 // Booking Routes
 router.get("/bookings"); // Get all bookings, or get bookings by category
