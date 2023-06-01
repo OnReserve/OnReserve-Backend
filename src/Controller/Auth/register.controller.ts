@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import dotenv from "dotenv";
-import { PrismaClient, User } from "@prisma/client";
+import { PrismaClient, Profile, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -19,6 +19,16 @@ async function register(req: Request, res: Response) {
         lname,
         email,
         password: hashedPassword,
+      },
+    });
+
+    await prisma.profile.create({
+      data: {
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
       },
     });
 

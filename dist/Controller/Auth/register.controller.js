@@ -15,6 +15,15 @@ async function register(req, res) {
                 password: hashedPassword,
             },
         });
+        await prisma.profile.create({
+            data: {
+                user: {
+                    connect: {
+                        id: user.id,
+                    },
+                },
+            },
+        });
         return res.json({ message: "User created successfully" });
     }
     catch (error) {

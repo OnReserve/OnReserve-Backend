@@ -160,15 +160,14 @@ model PasswordReset {
 }
 
 model Profile {
-  userId      Int       @unique
+  id          Int       @id @default(autoincrement())
+  userId      Int?      @unique
   phoneNumber String?
   profilePic  String?
   bio         String?
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
-  user        User?
-
-  @@id([userId])
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -188,8 +187,7 @@ model User {
   eventReviews         EventReview[]
   events               Event[]
   eventsApprovedBy     Event[]               @relation("UserApprovedEvents")
-  profileId            Int?                  @unique
-  profile              Profile?              @relation(fields: [profileId], references: [userId], onDelete: Cascade)
+  profile              Profile?
   passwordResets       PasswordReset[]
   personalAccessTokens PersonalAccessToken[]
 }

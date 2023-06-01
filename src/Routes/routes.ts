@@ -3,11 +3,11 @@ import { auth } from "../Controller/Auth/auth.controller.js";
 import registerController from "../Controller/Auth/register.controller.js";
 import loginController from "../Controller/Auth/login.controller.js";
 import logoutController from "../Controller/Auth/logout.controller.js";
-import profileController from "../Controller/Profile/profile.controller.js";
+import profileController from "../Controller/profile.controller.js";
 import { companyController } from "../Controller/company.controller.js";
 import {
-	companyFilesMiddleware,
-	upload,
+  companyFilesMiddleware,
+  profileFilesMiddleware,
 } from "../Middleware/file.middleware.js";
 
 const router = Router();
@@ -22,8 +22,12 @@ router.use(auth);
 
 // Profile Routes
 router.get("/profile/:id", profileController.getProfile);
-router.post("/profile/:id/edit");
-router.post("/profile/:id/upload");
+router.post(
+  "/profile/:id",
+  profileFilesMiddleware,
+  auth,
+  profileController.editProfile
+);
 
 // Event Routes
 router.get("/events"); // Get all events, or get events by category
@@ -46,19 +50,19 @@ router.delete("/event/:id/ratings/:id"); // Delete a rating for an event
 // Companies Routes
 router.get("/companies", companyController.getUserCompanies); // Get all companies, or get companies by category
 router.post(
-	"/company/add",
-	companyFilesMiddleware,
-	auth,
-	companyController.addCompany
+  "/company/add",
+  companyFilesMiddleware,
+  auth,
+  companyController.addCompany
 );
 
 router.get("/company/:id", companyController.getCompany);
 
 router.put(
-	"/company/:id",
-	companyFilesMiddleware,
-	auth,
-	companyController.editCompany
+  "/company/:id",
+  companyFilesMiddleware,
+  auth,
+  companyController.editCompany
 ); // edit company
 
 router.patch("/company/:id");
