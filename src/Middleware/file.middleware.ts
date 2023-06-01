@@ -12,3 +12,5 @@ export const companyFilesMiddleware = upload.fields([
 export const profileFilesMiddleware = upload.fields([
   { name: "profilePic", maxCount: 1 },
 ]);
+
+export const eventFilesMiddleware = upload.array("images");

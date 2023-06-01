@@ -8,7 +8,11 @@ import { companyController } from "../Controller/company.controller.js";
 import {
   companyFilesMiddleware,
   profileFilesMiddleware,
+	eventFilesMiddleware,
+	upload,
 } from "../Middleware/file.middleware.js";
+import { eventController } from "../Controller/events.controller.js";
+import { bookingController } from "../Controller/booking.controller.js";
 
 const router = Router();
 
@@ -30,13 +34,14 @@ router.post(
 );
 
 // Event Routes
-router.get("/events"); // Get all events, or get events by category
-router.post("/event/add");
+router.get("/events/popular"); // Get all events, or get events by category
+router.get("/events/upcoming", eventController.getUpcomingEvents);
+router.get("/events/search/:keyword", eventController.searchEvent);
+router.post("/event/add", eventFilesMiddleware, auth, eventController.addEvent);
 
-router.get("/event/:id");
-router.post("/event/:id");
-router.patch("/event/:id");
-router.delete("/event/:id");
+router.get("/event/:id", eventController.getEventDetails); // Event Details
+router.post("/event/:id", eventController.editEvent); // Edit
+router.delete("/event/:id", eventController.deleteEvent);
 
 // Review Routes
 router.get("/event/:id/ratings"); // Get all ratings for an event
@@ -65,17 +70,15 @@ router.put(
   companyController.editCompany
 ); // edit company
 
-router.patch("/company/:id");
+router.get("/company/search/:keyword", companyController.searchCompany);
 router.delete("/company/:id", companyController.deleteCompany);
 
 // Booking Routes
-router.get("/bookings"); // Get all bookings, or get bookings by category
-router.post("/booking/add");
+router.get("/bookings", bookingController.getBookings); // Get all bookings, or get bookings by category
+router.post("/booking/add", bookingController.addBooking);
 
-router.get("/booking/:id");
+router.get("/booking/:id", bookingController.getBookingDetails);
 router.put("/booking/:id");
-router.patch("/booking/:id");
-router.delete("/booking/:id");
 
 // Category Routes
 router.get("/categories"); // Get all categories, or get categories by category

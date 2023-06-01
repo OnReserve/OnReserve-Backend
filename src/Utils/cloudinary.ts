@@ -34,4 +34,13 @@ export const uploadImage = async (
 	return undefined;
 };
 
+export const uploadQR = async (qr: string, folder: string) => {
+	const uploadImage = await cloudinary.v2.uploader.upload(qr, {
+		folder,
+		resource_type: "auto",
+	});
+
+	return uploadImage;
+};
+
 export { cloudinary };
