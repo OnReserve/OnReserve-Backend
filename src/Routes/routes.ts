@@ -11,6 +11,7 @@ import {
 	upload,
 } from "../Middleware/file.middleware.js";
 import { eventController } from "../Controller/events.controller.js";
+import { bookingController } from "../Controller/booking.controller.js";
 
 const router = Router();
 
@@ -68,13 +69,11 @@ router.get("/company/search/:keyword", companyController.searchCompany);
 router.delete("/company/:id", companyController.deleteCompany);
 
 // Booking Routes
-router.get("/bookings"); // Get all bookings, or get bookings by category
-router.post("/booking/add");
+router.get("/bookings", bookingController.getBookings); // Get all bookings, or get bookings by category
+router.post("/booking/add", bookingController.addBooking);
 
-router.get("/booking/:id");
+router.get("/booking/:id", bookingController.getBookingDetails);
 router.put("/booking/:id");
-router.patch("/booking/:id");
-router.delete("/booking/:id");
 
 // Category Routes
 router.get("/categories"); // Get all categories, or get categories by category
