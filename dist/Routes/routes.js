@@ -9,6 +9,7 @@ import { companyFilesMiddleware, profileFilesMiddleware, } from "../Middleware/f
 import { companyFilesMiddleware, eventFilesMiddleware, } from "../Middleware/file.middleware.js";
 import { eventController } from "../Controller/events.controller.js";
 import { bookingController } from "../Controller/booking.controller.js";
+import { reviewController } from "../Controller/review.controller.js";
 const router = Router();
 // Auth Routes
 router.post("/auth/register", registerController.register);
@@ -28,12 +29,11 @@ router.get("/event/:id", eventController.getEventDetails); // Event Details
 router.post("/event/:id", eventController.editEvent); // Edit
 router.delete("/event/:id", eventController.deleteEvent);
 // Review Routes
-router.get("/event/:id/ratings"); // Get all ratings for an event
-router.post("/event/:id/ratings"); // Add a rating to an event
-router.get("/event/:id/ratings/:id"); // Get a rating for an event
-router.put("/event/:id/ratings/:id"); // Edit a rating for an event
+router.get("/event/:id/ratings", reviewController.getEventReviews); // Get all ratings for an event
+router.post("/event/:id/ratings", reviewController.addReview); // Add a rating to an event
+router.put("/event/ratings/:id", reviewController.editReview); // Edit a rating for an event
 router.patch("/event/:id/ratings/:id"); // Edit a rating for an event
-router.delete("/event/:id/ratings/:id"); // Delete a rating for an event
+router.delete("/event/ratings/:id", reviewController.deleteReview); // Delete a rating for an event
 // Companies Routes
 router.get("/companies", companyController.getUserCompanies); // Get all companies, or get companies by category
 router.post("/company/add", companyFilesMiddleware, auth, companyController.addCompany);
