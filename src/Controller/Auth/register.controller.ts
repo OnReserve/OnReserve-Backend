@@ -32,7 +32,26 @@ async function register(req: Request, res: Response) {
       },
     });
 
-    return res.json({ message: "User created successfully" });
+    const profile: any = await prisma.profile.findUnique({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    var { id, userId, createdAt, updatedAt, ProfileId, ...rest } = profile;
+    const { password, emailVerifiedAt, rememberToken, ...final } = rest.user;
+
+    delete rest.user;
+    rest = { ...final, ...rest };
+
+    return res.status(200).json(rest);
   } catch (error: any) {
     console.log(error);
     if (error.code === "P2002") {

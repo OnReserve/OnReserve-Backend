@@ -22,6 +22,7 @@ const addEvent = async (req: Request, res: Response) => {
     economySeats,
     vipSeats,
     vipPrice,
+    categories,
   } = req.body;
 
   if (
@@ -69,6 +70,12 @@ const addEvent = async (req: Request, res: Response) => {
       vipPrice: parseInt(vipPrice),
       vipSeats: parseInt(vipSeats),
       approved: false,
+      categories: {
+        connect: categories.map((c: Number) => ({
+          categoryId: c,
+          eventId: event.id,
+        })),
+      },
       locations: {
         create: [
           {

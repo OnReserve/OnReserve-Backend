@@ -12,12 +12,9 @@ import {
 } from "../Middleware/file.middleware.js";
 import { eventController } from "../Controller/events.controller.js";
 import { bookingController } from "../Controller/booking.controller.js";
-<<<<<<< Updated upstream
 import { reviewController } from "../Controller/review.controller.js";
-=======
 import profileController from "../Controller/profile.controller.js";
 import categoryController from "../Controller/category.controller.js";
->>>>>>> Stashed changes
 
 const router = Router();
 
