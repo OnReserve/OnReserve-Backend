@@ -3,13 +3,16 @@ import { auth } from "../Controller/Auth/auth.controller.js";
 import registerController from "../Controller/Auth/register.controller.js";
 import loginController from "../Controller/Auth/login.controller.js";
 import logoutController from "../Controller/Auth/logout.controller.js";
-import profileController from "../Controller/profile.controller.js";
 import { companyController } from "../Controller/company.controller.js";
-import { companyFilesMiddleware, profileFilesMiddleware, } from "../Middleware/file.middleware.js";
-import { companyFilesMiddleware, eventFilesMiddleware, } from "../Middleware/file.middleware.js";
+import { companyFilesMiddleware, profileFilesMiddleware, eventFilesMiddleware, } from "../Middleware/file.middleware.js";
 import { eventController } from "../Controller/events.controller.js";
 import { bookingController } from "../Controller/booking.controller.js";
+<<<<<<< Updated upstream
 import { reviewController } from "../Controller/review.controller.js";
+=======
+import profileController from "../Controller/profile.controller.js";
+import categoryController from "../Controller/category.controller.js";
+>>>>>>> Stashed changes
 const router = Router();
 // Auth Routes
 router.post("/auth/register", registerController.register);
@@ -47,11 +50,10 @@ router.post("/booking/add", bookingController.addBooking);
 router.get("/booking/:id", bookingController.getBookingDetails);
 router.put("/booking/:id");
 // Category Routes
-router.get("/categories"); // Get all categories, or get categories by category
-router.post("/category/add");
-router.get("/category/:id");
-router.put("/category/:id");
-router.patch("/category/:id");
-router.delete("/category/:id");
+router.get("/categories", categoryController.allCategories); // Get all categories, or get categories by category
+router.post("/category/add", categoryController.addCategory);
+router.get("/category/:id", categoryController.getCategory);
+router.put("/category/:id", categoryController.updateCategory);
+router.delete("/category/:id", categoryController.deleteCategory);
 export default router;
 //# sourceMappingURL=routes.js.map

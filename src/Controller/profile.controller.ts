@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { uploadImage } from "../Utils/cloudinary.js";
 import { IProfileFiles } from "../Types/profile.js";
-import { log } from "console";
 
 const prisma = new PrismaClient();
 
@@ -49,8 +48,6 @@ async function editProfile(req: Request, res: Response) {
     const bio = req.body?.bio;
 
     if (userID !== user_id) {
-      console.log(user_id);
-
       return res.status(401).json({ error: "Unauthorized Access" });
     }
 
@@ -103,8 +100,6 @@ async function editProfile(req: Request, res: Response) {
       },
     });
 
-    log(phoneNumber, bio, pro?.url);
-
     var { id, userId, createdAt, updatedAt, ProfileId, ...rest } =
       updatedProfile;
     const { password, emailVerifiedAt, rememberToken, ...final } = rest.user;
@@ -114,7 +109,7 @@ async function editProfile(req: Request, res: Response) {
     return res.status(200).json(rest);
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Please Enter valid data" });
   }
 }
 

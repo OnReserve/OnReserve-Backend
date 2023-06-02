@@ -74,18 +74,13 @@ devDependencies:
     specifier: ^1.4.7
     version: 1.4.7
   '@types/node':
-<<<<<<< HEAD
-    specifier: ^20.2.5
-    version: 20.2.5
-=======
     specifier: ^20.2.3
-    version: 20.2.3
+    version: 20.2.5
   '@types/qrcode':
     specifier: ^1.5.0
     version: 1.5.0
->>>>>>> 6da95e20198b38f6637bcce9b8fec54155003419
   mysql2:
-    specifier: ^3.3.3
+    specifier: ^3.3.2
     version: 3.3.3
   prisma:
     specifier: 4.11.0
@@ -219,7 +214,7 @@ packages:
   /@types/qrcode@1.5.0:
     resolution: {integrity: sha512-x5ilHXRxUPIMfjtM+1vf/GPTRWZ81nqscursm5gMznJeK9M0YnZ1c3bEvRLQ0zSSgedLx1J6MGL231ObQGGhaA==}
     dependencies:
-      '@types/node': 20.2.3
+      '@types/node': 20.2.5
     dev: true
 
   /@types/qs@6.9.7:
@@ -728,17 +723,12 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
-<<<<<<< HEAD
-  /dotenv@16.1.1:
-    resolution: {integrity: sha512-UGmzIqXU/4b6Vb3R1Vrfd/4vGgVlB+mO+vEixOdfRhLeppkyW2BMhuK7TL8d0el+q9c4lW9qK2wZYhNLFhXYLA==}
-=======
   /dijkstrajs@1.0.3:
     resolution: {integrity: sha512-qiSlmBq9+BCdCA/L46dw8Uy93mloxsPSbwnm5yrKn2vMPiy8KyAskTF6zuV/j5BMsmOGZDPs7KjU+mjb670kfA==}
     dev: false
 
-  /dotenv@16.0.3:
-    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
->>>>>>> 6da95e20198b38f6637bcce9b8fec54155003419
+  /dotenv@16.1.1:
+    resolution: {integrity: sha512-UGmzIqXU/4b6Vb3R1Vrfd/4vGgVlB+mO+vEixOdfRhLeppkyW2BMhuK7TL8d0el+q9c4lW9qK2wZYhNLFhXYLA==}
     engines: {node: '>=12'}
     dev: false
 
