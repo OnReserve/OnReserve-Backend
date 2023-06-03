@@ -41,62 +41,72 @@ const addBooking = async (req: Request, res: Response) => {
 };
 
 const getBookings = async (req: Request, res: Response) => {
-	const { user_id } = req.body;
+	try {
+		const { user_id } = req.body;
 
-	const bookings = await prisma.booking.findMany({
-		where: {
-			userId: user_id,
-		},
-		include: {
-			event: true,
-		},
-		orderBy: {
-			createdAt: "desc",
-		},
-	});
+		const bookings = await prisma.booking.findMany({
+			where: {
+				userId: user_id,
+			},
+			include: {
+				event: true,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
 
-	return res.status(200).json(bookings);
+		return res.status(200).json(bookings);
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
 };
 
 const getBookingDetails = async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const { user_id } = req.body;
+	try {
+		const { id } = req.params;
+		const { user_id } = req.body;
 
-	if (!id) {
-		return res.status(400).json({ message: "ID not found" });
-	}
+		if (!id) {
+			return res.status(400).json({ message: "ID not found" });
+		}
 
-	const booking = await prisma.booking.findUnique({
-		where: {
-			id: parseInt(id),
-		},
-	});
+		const booking = await prisma.booking.findUnique({
+			where: {
+				id: parseInt(id),
+			},
+		});
 
-	if (!booking) {
-		return res.status(404).json({ message: "Booking not found" });
-	}
+		if (!booking) {
+			return res.status(404).json({ message: "Booking not found" });
+		}
 
-	if (booking.userId != user_id) {
-		return res
-			.status(403)
-			.json({ message: "You don't have the Authorization to view" });
-	}
+		if (booking.userId != user_id) {
+			return res
+				.status(403)
+				.json({ message: "You don't have the Authorization to view" });
+		}
 
-	const bookingDetails = await prisma.booking.findUnique({
-		where: {
-			id: parseInt(id),
-		},
-		include: {
-			event: {
-				include: {
-					locations: true,
-					galleries: true,
+		const bookingDetails = await prisma.booking.findUnique({
+			where: {
+				id: parseInt(id),
+			},
+			include: {
+				event: {
+					include: {
+						locations: true,
+						galleries: true,
+					},
 				},
 			},
-		},
-	});
+		});
 
-	return res.status(200).json(bookingDetails);
+		return res.status(200).json(bookingDetails);
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
 };
 
 export const bookingController = { addBooking, getBookings, getBookingDetails };
