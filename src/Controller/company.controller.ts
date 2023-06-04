@@ -60,153 +60,178 @@ const addCompany = async (req: Request, res: Response) => {
 };
 
 const editCompany = async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const { user_id, name, bio } = req.body;
-	const files = req.files as ICompanyFiles;
+	try {
+		const { id } = req.params;
+		const { user_id, name, bio } = req.body;
+		const files = req.files as ICompanyFiles;
 
-	if (!id) {
-		return res.status(400).json({ message: "Provide Company ID" });
-	}
+		if (!id) {
+			return res.status(400).json({ message: "Provide Company ID" });
+		}
 
-	if (!user_id) {
-		return res.status(400).json({ message: "Token not found" });
-	}
+		if (!user_id) {
+			return res.status(400).json({ message: "Token not found" });
+		}
 
-	const company = await prisma.company.findUnique({
-		where: {
-			id: parseInt(id),
-		},
-	});
-
-	if (!company) {
-		return res.status(404).json({ message: "Company not found" });
-	}
-
-	if (company.owner !== parseInt(user_id)) {
-		return res.status(403).json({
-			message: "You don't have an authority to edit this company",
+		const company = await prisma.company.findUnique({
+			where: {
+				id: parseInt(id),
+			},
 		});
+
+		if (!company) {
+			return res.status(404).json({ message: "Company not found" });
+		}
+
+		if (company.owner !== parseInt(user_id)) {
+			return res.status(403).json({
+				message: "You don't have an authority to edit this company",
+			});
+		}
+
+		let cover = undefined;
+		if (files.coverPic && files.coverPic[0]) {
+			cover = await uploadImage(
+				files.coverPic[0],
+				"onReserve/Companies/Cover"
+			);
+		}
+
+		let profile = undefined;
+		if (files.profilePic && files.profilePic[0]) {
+			profile = await uploadImage(
+				files.profilePic[0],
+				"onReserve/Companies/Profile"
+			);
+		}
+
+		const updatedCompany = await prisma.company.update({
+			where: {
+				id: company.id,
+			},
+			data: {
+				name,
+				bio,
+				coverPic: cover?.secure_url,
+				profPic: profile?.secure_url,
+			},
+		});
+
+		return res.status(200).json(updatedCompany);
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json("Internal error");
 	}
-
-	let cover = undefined;
-	if (files.coverPic && files.coverPic[0]) {
-		cover = await uploadImage(
-			files.coverPic[0],
-			"onReserve/Companies/Cover"
-		);
-	}
-
-	let profile = undefined;
-	if (files.profilePic && files.profilePic[0]) {
-		profile = await uploadImage(
-			files.profilePic[0],
-			"onReserve/Companies/Profile"
-		);
-	}
-
-	const updatedCompany = await prisma.company.update({
-		where: {
-			id: company.id,
-		},
-		data: {
-			name,
-			bio,
-			coverPic: cover?.secure_url,
-			profPic: profile?.secure_url,
-		},
-	});
-
-	return res.status(200).json(updatedCompany);
 };
 
 const getCompany = async (req: Request, res: Response) => {
-	const { id } = req.params;
-	if (!id) {
-		return res.status(400).json({ message: "Company ID not found" });
+	try {
+		const { id } = req.params;
+		if (!id) {
+			return res.status(400).json({ message: "Company ID not found" });
+		}
+
+		const company = await prisma.company.findUnique({
+			where: {
+				id: parseInt(id),
+			},
+			include: {
+				users: true,
+				events: true,
+			},
+		});
+
+		if (!company) {
+			return res.status(404).json({ message: "Company not found" });
+		}
+
+		return res.status(200).json(company);
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json("Internal error");
 	}
-
-	const company = await prisma.company.findUnique({
-		where: {
-			id: parseInt(id),
-		},
-		include: {
-			users: true,
-			events: true,
-		},
-	});
-
-	if (!company) {
-		return res.status(404).json({ message: "Company not found" });
-	}
-
-	return res.status(200).json(company);
 };
 
 const getUserCompanies = async (req: Request, res: Response) => {
-	const { user_id } = req.body;
+	try {
+		const { user_id } = req.body;
 
-	const companies = await prisma.companyUser.findMany({
-		where: {
-			userId: user_id,
-		},
-		select: {
-			company: {
-				include: {
-					_count: true,
+		const companies = await prisma.companyUser.findMany({
+			where: {
+				userId: user_id,
+			},
+			select: {
+				company: {
+					include: {
+						_count: true,
+					},
 				},
 			},
-		},
-	});
+		});
 
-	return res.json(companies);
+		return res.json(companies);
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json("Internal error");
+	}
 };
 
 const deleteCompany = async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const { user_id } = req.body;
+	try {
+		const { id } = req.params;
+		const { user_id } = req.body;
 
-	if (!id) {
-		return res.status(400).json({ message: "ID not found" });
-	}
+		if (!id) {
+			return res.status(400).json({ message: "ID not found" });
+		}
 
-	const company = await prisma.company.findUnique({
-		where: {
-			id: parseInt(id),
-		},
-	});
+		const company = await prisma.company.findUnique({
+			where: {
+				id: parseInt(id),
+			},
+		});
 
-	if (!company) {
-		return res.status(404).json({ message: "Company not found" });
-	}
+		if (!company) {
+			return res.status(404).json({ message: "Company not found" });
+		}
 
-	if (company?.owner != user_id) {
+		if (company?.owner != user_id) {
+			return res
+				.status(403)
+				.json({ message: "You don't have permission to delete" });
+		}
+
+		const deletedCompany = await prisma.company.delete({
+			where: {
+				id: company.id,
+			},
+		});
+
 		return res
-			.status(403)
-			.json({ message: "You don't have permission to delete" });
+			.status(200)
+			.json({ message: "Deleted Successfully", data: deletedCompany });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json("Internal error");
 	}
-
-	const deletedCompany = await prisma.company.delete({
-		where: {
-			id: company.id,
-		},
-	});
-
-	return res
-		.status(200)
-		.json({ message: "Deleted Successfully", data: deletedCompany });
 };
 
 const searchCompany = async (req: Request, res: Response) => {
-	const { keyword } = req.params;
-	const companies = await prisma.company.findMany({
-		where: {
-			name: {
-				contains: keyword,
+	try {
+		const { keyword } = req.params;
+		const companies = await prisma.company.findMany({
+			where: {
+				name: {
+					contains: keyword,
+				},
 			},
-		},
-	});
+		});
 
-	return res.status(200).json(companies);
+		return res.status(200).json(companies);
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json("Internal error");
+	}
 };
 
 export const companyController = {

@@ -57,7 +57,7 @@ async function register(req: Request, res: Response) {
 	} catch (error: any) {
 		console.log(error);
 		if (error.code === "P2002") {
-			return res.status(500).json({ message: "Email already exists" });
+			return res.status(400).json({ message: "Email already exists" });
 		}
 		return res.status(500).json({ message: "Failed to create user" });
 	}

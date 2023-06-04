@@ -79,50 +79,60 @@ const editReview = async (req: Request, res: Response) => {
 };
 
 const deleteReview = async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const { user_id } = req.body;
+	try {
+		const { id } = req.params;
+		const { user_id } = req.body;
 
-	const review = await prisma.eventReview.findUnique({
-		where: {
-			id: parseInt(id),
-		},
-	});
+		const review = await prisma.eventReview.findUnique({
+			where: {
+				id: parseInt(id),
+			},
+		});
 
-	if (!review) {
-		return res.status(404).json({ message: "Review not found" });
+		if (!review) {
+			return res.status(404).json({ message: "Review not found" });
+		}
+
+		if (review.userId != parseInt(user_id)) {
+			return res.status(403).json({ message: "Forbidden Access" });
+		}
+
+		const deletedReview = await prisma.eventReview.delete({
+			where: {
+				id: review.id,
+			},
+		});
+
+		return res
+			.status(200)
+			.json({ message: "Deleted Successfully", data: deletedReview });
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({ message: "Internal Server Error" });
 	}
-
-	if (review.userId != parseInt(user_id)) {
-		return res.status(403).json({ message: "Forbidden Access" });
-	}
-
-	const deletedReview = await prisma.eventReview.delete({
-		where: {
-			id: review.id,
-		},
-	});
-
-	return res
-		.status(200)
-		.json({ message: "Deleted Successfully", data: deletedReview });
 };
 
 const getEventReviews = async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const { user_id } = req.body;
+	try {
+		const { id } = req.params;
+		const { user_id } = req.body;
 
-	const reviews = await prisma.eventReview.findMany({
-		where: {
-			eventId: parseInt(id),
-		},
-	});
+		const reviews = await prisma.eventReview.findMany({
+			where: {
+				eventId: parseInt(id),
+			},
+		});
 
-	const ratings =
-		reviews
-			.map((val) => val.stars)
-			.reduce((_prev, _current) => _prev + _current) / reviews.length;
+		const ratings =
+			reviews
+				.map((val) => val.stars)
+				.reduce((_prev, _current) => _prev + _current) / reviews.length;
 
-	return res.json({ rating: ratings, reviews });
+		return res.json({ rating: ratings, reviews });
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
 };
 
 export const reviewController = {
