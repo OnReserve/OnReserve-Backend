@@ -47,8 +47,8 @@ model CategoryEvent {
   eventId    Int
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
-  category   Category  @relation(fields: [categoryId], references: [id])
-  event      Event     @relation(fields: [eventId], references: [id])
+  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  event      Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
 
 model Company {
@@ -72,8 +72,8 @@ model CompanyUser {
   userId    Int
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  company   Company   @relation(fields: [companyId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model EventGallery {

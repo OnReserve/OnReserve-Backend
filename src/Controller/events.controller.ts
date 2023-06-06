@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { uploadImage } from "../Utils/cloudinary.js";
+import { log } from "console";
 
 const prisma = new PrismaClient();
 
@@ -47,9 +48,9 @@ const addEvent = async (req: Request, res: Response) => {
 		}
 
 		const files = req.files as Express.Multer.File[];
-
-		const filenames = await Promise.all(
-			files?.map(
+		let filenames;
+		filenames = await Promise.all(
+			files.map(
 				async (file) =>
 					await uploadImage(file, "onReserve/Events").then((res) => ({
 						eventPhoto: res?.url || "",
@@ -63,19 +64,24 @@ const addEvent = async (req: Request, res: Response) => {
 				companyId: parseInt(companyId),
 				title,
 				desc,
-				eventStartTime,
-				eventEndTime,
-				eventDeadline,
+				eventStartTime: new Date(eventStartTime),
+				eventEndTime: new Date(eventEndTime),
+				eventDeadline: new Date(eventDeadline),
 				economyPrice: parseInt(economyPrice),
 				economySeats: parseInt(economySeats),
 				vipPrice: parseInt(vipPrice),
 				vipSeats: parseInt(vipSeats),
 				approved: false,
 				categories: {
-					connect: categories.map((c: Number) => ({
-						categoryId: c,
-						eventId: event.id,
-					})),
+					create: Array.isArray(categories)
+						? categories.map((c: string) => ({
+								categoryId: parseInt(c),
+						  }))
+						: [
+								{
+									categoryId: parseInt(categories),
+								},
+						  ],
 				},
 				locations: {
 					create: [

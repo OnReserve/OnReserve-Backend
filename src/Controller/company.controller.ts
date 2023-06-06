@@ -136,8 +136,28 @@ const getCompany = async (req: Request, res: Response) => {
 				id: parseInt(id),
 			},
 			include: {
-				users: true,
-				events: true,
+				users: {
+					select: {
+						user: {
+							select: {
+								id: true,
+								fname: true,
+								lname: true,
+								email: true,
+								profile: {
+									select: {
+										profilePic: true,
+									},
+								},
+							},
+						},
+					},
+				},
+				events: {
+					include: {
+						galleries: true,
+					},
+				},
 			},
 		});
 
@@ -146,6 +166,66 @@ const getCompany = async (req: Request, res: Response) => {
 		}
 
 		return res.status(200).json(company);
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json("Internal error");
+	}
+};
+
+const addCompanyAdmin = async (req: Request, res: Response) => {
+	try {
+		const { user_id, email } = req.body;
+		const { id } = req.params;
+
+		if (!email) {
+			return res.status(400).json({ message: "User email Required" });
+		}
+
+		const company = await prisma.company.findUnique({
+			where: {
+				id: parseInt(id as string),
+			},
+			include: {
+				users: true,
+			},
+		});
+
+		const user = await prisma.user.findFirst({
+			where: {
+				email,
+			},
+		});
+
+		if (!user) {
+			return res.status(404).json({ message: "User Not Found" });
+		}
+
+		if (!company) {
+			return res.status(404).json({ message: "Company Not Found" });
+		}
+
+		const admins = company.users.map((_user) => _user.userId);
+
+		if (admins.indexOf(user_id) === -1) {
+			return res
+				.status(403)
+				.json({ message: "You don't have Authorization" });
+		}
+
+		if (admins.indexOf(user.id) !== -1) {
+			return res
+				.status(403)
+				.json({ message: "User is already an admin" });
+		}
+
+		await prisma.companyUser.create({
+			data: {
+				userId: user.id,
+				companyId: parseInt(id as string),
+			},
+		});
+
+		return res.json({ message: "Admin Added" });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json("Internal error");
@@ -241,4 +321,5 @@ export const companyController = {
 	getUserCompanies,
 	deleteCompany,
 	searchCompany,
+	addCompanyAdmin,
 };
