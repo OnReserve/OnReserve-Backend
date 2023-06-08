@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { uploadImage } from "../Utils/cloudinary.js";
-import { log } from "console";
 
 const prisma = new PrismaClient();
 
@@ -267,6 +266,7 @@ const getUpcomingEvents = async (req: Request, res: Response) => {
 			},
 			include: {
 				galleries: true,
+				company: true,
 			},
 			orderBy: {
 				eventStartTime: "asc",
@@ -297,6 +297,7 @@ const getEventDetails = async (req: Request, res: Response) => {
 			include: {
 				locations: true,
 				galleries: true,
+				company: true,
 			},
 		});
 
@@ -333,11 +334,28 @@ const searchEvent = async (req: Request, res: Response) => {
 	}
 };
 
+const getUserEvents = async (req: Request, res: Response) => {
+	const { user_id } = req.body;
+	const events = await prisma.event.findMany({
+		where: {
+			userId: user_id,
+		},
+		include: {
+			galleries: true,
+			locations: true,
+			company: true,
+		},
+	});
+
+	return res.status(200).json(events);
+};
+
 export const eventController = {
 	addEvent,
 	editEvent,
 	deleteEvent,
 	getUpcomingEvents,
 	getEventDetails,
+	getUserEvents,
 	searchEvent,
 };

@@ -23,6 +23,12 @@ router.post("/auth/register", registerController.register);
 router.post("/auth/login", loginController.login);
 router.post("/auth/logout", logoutController.logout);
 
+// Event Routes
+router.get("/events/popular"); // Get all events, or get events by category
+router.get("/events/upcoming", eventController.getUpcomingEvents);
+router.get("/events/search/:keyword", eventController.searchEvent);
+router.get("/event/:id", eventController.getEventDetails); // Event Details
+
 // Authentication middleware
 router.use(auth);
 
@@ -36,19 +42,14 @@ router.post(
 );
 
 // Event Routes
-router.get("/events/popular"); // Get all events, or get events by category
-router.get("/events/upcoming", eventController.getUpcomingEvents);
-router.get("/events/search/:keyword", eventController.searchEvent);
 router.post("/event/add", eventFilesMiddleware, auth, eventController.addEvent);
-
-router.get("/event/:id", eventController.getEventDetails); // Event Details
 router.post("/event/:id", eventController.editEvent); // Edit
 router.delete("/event/:id", eventController.deleteEvent);
+router.get("/events/user", eventController.getUserEvents);
 
 // Review Routes
 router.get("/event/:id/ratings", reviewController.getEventReviews); // Get all ratings for an event
 router.post("/event/:id/ratings", reviewController.addReview); // Add a rating to an event
-
 router.put("/event/ratings/:id", reviewController.editReview); // Edit a rating for an event
 router.patch("/event/:id/ratings/:id"); // Edit a rating for an event
 router.delete("/event/ratings/:id", reviewController.deleteReview); // Delete a rating for an event
@@ -62,23 +63,19 @@ router.post(
 	companyController.addCompany
 );
 router.post("/company/:id/admins", companyController.addCompanyAdmin);
-
 router.get("/company/:id", companyController.getCompany);
-
 router.put(
 	"/company/:id",
 	companyFilesMiddleware,
 	auth,
 	companyController.editCompany
 ); // edit company
-
 router.get("/company/search/:keyword", companyController.searchCompany);
 router.delete("/company/:id", companyController.deleteCompany);
 
 // Booking Routes
 router.get("/bookings", bookingController.getBookings); // Get all bookings, or get bookings by category
 router.post("/booking/add", bookingController.addBooking);
-
 router.get("/booking/:id", bookingController.getBookingDetails);
 router.put("/booking/:id");
 
