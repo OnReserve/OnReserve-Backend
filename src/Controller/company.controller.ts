@@ -156,6 +156,13 @@ const getCompany = async (req: Request, res: Response) => {
 				events: {
 					include: {
 						galleries: true,
+						user: {
+							select: {
+								id: true,
+								fname: true,
+								lname: true,
+							},
+						},
 					},
 				},
 			},
