@@ -21,6 +21,7 @@ model Booking {
   id           Int              @id @default(autoincrement())
   userId       Int
   eventId      Int
+  approved     Boolean          @default(false)
   completed    Boolean
   bookingToken String
   qrcode       String
@@ -178,6 +179,7 @@ model User {
   email                String                @unique
   emailVerifiedAt      DateTime?
   password             String
+  role                 Roles                 @default(USER)
   rememberToken        String?
   createdAt            DateTime?             @default(now())
   updatedAt            DateTime?             @updatedAt
@@ -191,4 +193,9 @@ model User {
   profile              Profile?
   passwordResets       PasswordReset[]
   personalAccessTokens PersonalAccessToken[]
+}
+
+enum Roles {
+  USER
+  SUPERADMIN
 }

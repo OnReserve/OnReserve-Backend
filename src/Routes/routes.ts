@@ -15,6 +15,8 @@ import { bookingController } from "../Controller/booking.controller.js";
 import { reviewController } from "../Controller/review.controller.js";
 import profileController from "../Controller/profile.controller.js";
 import categoryController from "../Controller/category.controller.js";
+import { AdminAuth } from "../Controller/Admin/auth.middleware.js";
+import { adminController } from "../Controller/Admin/admin.controller.js";
 
 const router = Router();
 
@@ -28,6 +30,8 @@ router.get("/events/popular"); // Get all events, or get events by category
 router.get("/events/upcoming", eventController.getUpcomingEvents);
 router.get("/events/search/:keyword", eventController.searchEvent);
 router.get("/event/:id", eventController.getEventDetails); // Event Details
+
+router.get("/categories", categoryController.allCategories); // Get all categories, or get categories by category
 
 // Authentication middleware
 router.use(auth);
@@ -80,10 +84,17 @@ router.get("/booking/:id", bookingController.getBookingDetails);
 router.put("/booking/:id");
 
 // Category Routes
-router.get("/categories", categoryController.allCategories); // Get all categories, or get categories by category
 router.post("/category/add", categoryController.addCategory);
 router.get("/category/:id", categoryController.getCategory);
 router.put("/category/:id", categoryController.updateCategory);
 router.delete("/category/:id", categoryController.deleteCategory);
+
+router.use(AdminAuth);
+
+router.get("/admin/stats", adminController.getStat);
+router.get("/admin/admins", adminController.getAdmins);
+router.post("/admin/admins", adminController.addAdmin);
+router.delete("/admin/admins/:id", adminController.removeAdmin);
+router.get("/admin/bookings", adminController.getAllUnapprovedTickets);
 
 export default router;

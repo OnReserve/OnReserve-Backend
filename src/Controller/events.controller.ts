@@ -110,7 +110,6 @@ const editEvent = async (req: Request, res: Response) => {
 	try {
 		const {
 			user_id,
-			companyId,
 			title,
 			desc,
 			eventStartTime,
