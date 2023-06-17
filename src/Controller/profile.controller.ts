@@ -51,6 +51,8 @@ async function editProfile(req: Request, res: Response) {
     const user_id = req.body?.user_id;
     const phoneNumber = req.body?.phoneNumber;
     const bio = req.body?.bio;
+    const fname = req.body?.fname;
+    const lname = req.body?.lname;
 
     if (userID !== user_id) {
       return res.status(401).json({ error: "Unauthorized Access" });
@@ -95,6 +97,18 @@ async function editProfile(req: Request, res: Response) {
       rest = { ...final, ...rest };
 
       return res.status(200).json(rest);
+    }
+
+    if (lname && fname) {
+      const user = await prisma.user.update({
+        where: {
+          id: userID,
+        },
+        data: {
+          lname: lname,
+          fname: fname,
+        },
+      });
     }
 
     const updatedProfile: any = await prisma.profile.update({
