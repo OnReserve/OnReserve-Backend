@@ -32,6 +32,9 @@ router.get("/events/search/:keyword", eventController.searchEvent);
 router.get("/event/:id", eventController.getEventDetails); // Event Details
 
 router.get("/categories", categoryController.allCategories); // Get all categories, or get categories by category
+router.get("/category/:id", categoryController.getCategory);
+
+router.get("/event/:id/ratings", reviewController.getEventReviews); // Get all ratings for an event
 
 // Authentication middleware
 router.use(auth);
@@ -52,7 +55,6 @@ router.delete("/event/:id", eventController.deleteEvent);
 router.get("/events/user", eventController.getUserEvents);
 
 // Review Routes
-router.get("/event/:id/ratings", reviewController.getEventReviews); // Get all ratings for an event
 router.post("/event/:id/ratings", reviewController.addReview); // Add a rating to an event
 router.put("/event/ratings/:id", reviewController.editReview); // Edit a rating for an event
 router.patch("/event/:id/ratings/:id"); // Edit a rating for an event
@@ -84,10 +86,6 @@ router.get("/booking/:id", bookingController.getBookingDetails);
 router.put("/booking/:id");
 
 // Category Routes
-router.post("/category/add", categoryController.addCategory);
-router.get("/category/:id", categoryController.getCategory);
-router.put("/category/:id", categoryController.updateCategory);
-router.delete("/category/:id", categoryController.deleteCategory);
 
 router.use(AdminAuth);
 
@@ -95,6 +93,13 @@ router.get("/admin/stats", adminController.getStat);
 router.get("/admin/admins", adminController.getAdmins);
 router.post("/admin/admins", adminController.addAdmin);
 router.delete("/admin/admins/:id", adminController.removeAdmin);
-router.get("/admin/bookings", adminController.getAllUnapprovedTickets);
+router.get(
+	"/admin/bookings/unapproved",
+	adminController.getAllUnapprovedTickets
+);
+router.put(`/admin/booking/:id`, adminController.approveTicket);
+router.post("/category/add", categoryController.addCategory);
+router.put("/category/:id", categoryController.updateCategory);
+router.delete("/category/:id", categoryController.deleteCategory);
 
 export default router;

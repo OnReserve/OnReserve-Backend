@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 dotenv.config();
 
-const secret: string = process.env.JWT_SECRET!;
+export const secret: string = process.env.JWT_SECRET! || "$#@#$@D@S#S";
 
 async function login(req: Request, res: Response) {
 	try {

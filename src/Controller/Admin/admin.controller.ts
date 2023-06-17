@@ -131,9 +131,41 @@ const getAllUnapprovedTickets = async (req: Request, res: Response) => {
 			where: {
 				approved: false,
 			},
+			include: {
+				event: true,
+			},
 		});
 
-		return res.status(200).json(tickets);
+		const newT = tickets.map((_ticket) => {
+			const totalPrice =
+				_ticket.economyCount * _ticket.event.economyPrice +
+				_ticket.vipCount * _ticket.event.vipPrice;
+
+			const { event, ...info } = _ticket;
+			return { ...info, price: totalPrice };
+		});
+
+		return res.status(200).json(newT);
+	} catch (e) {
+		log(e);
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
+};
+
+const approveTicket = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+
+		const tickets = await prisma.booking.update({
+			where: {
+				id: parseInt(id),
+			},
+			data: {
+				approved: true,
+			},
+		});
+
+		return res.status(200).json({ message: "Ticket Approved" });
 	} catch (e) {
 		log(e);
 		return res.status(500).json({ message: "Internal Server Error" });
@@ -146,4 +178,5 @@ export const adminController = {
 	addAdmin,
 	removeAdmin,
 	getAllUnapprovedTickets,
+	approveTicket,
 };
