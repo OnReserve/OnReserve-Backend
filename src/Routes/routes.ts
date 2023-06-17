@@ -26,10 +26,11 @@ router.post("/auth/login", loginController.login);
 router.post("/auth/logout", logoutController.logout);
 
 // Event Routes
-router.get("/events/popular"); // Get all events, or get events by category
+router.get("/events/popular", eventController.getPopularEvents); // Get all events, or get events by category
 router.get("/events/upcoming", eventController.getUpcomingEvents);
 router.get("/events/search/:keyword", eventController.searchEvent);
 router.get("/event/:id", eventController.getEventDetails); // Event Details
+router.get("/events/filter", eventController.filterEvents);
 
 router.get("/categories", categoryController.allCategories); // Get all categories, or get categories by category
 router.get("/category/:id", categoryController.getCategory);
