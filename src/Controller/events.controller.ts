@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { uploadImage } from "../Utils/cloudinary.js";
+import { log } from "console";
 
 const prisma = new PrismaClient();
 
@@ -349,6 +350,105 @@ const getUserEvents = async (req: Request, res: Response) => {
 	return res.status(200).json(events);
 };
 
+const filterEvents = async (req: Request, res: Response) => {
+	try {
+		const { category, from, until, city, venue, minPrice, maxPrice } =
+			req.query;
+
+		let categoryId: number;
+		let categories: any;
+		if (category) {
+			categoryId = parseInt(category as string);
+			categories = {
+				some: {
+					categoryId,
+				},
+			};
+		}
+
+		let eventStartTime: { gte?: Date; lte?: Date } = {};
+
+		if (from) {
+			eventStartTime["gte"] = new Date(from as string);
+		}
+
+		if (until) {
+			eventStartTime["lte"] = new Date(until as string);
+		}
+
+		let locations: any = {};
+
+		if (city) {
+			locations["some"] = {
+				city: {
+					contains: city,
+				},
+			};
+		}
+
+		if (venue) {
+			locations["some"] = {
+				venue: {
+					contains: venue,
+				},
+			};
+		}
+
+		let economyPrice: any = {};
+
+		if (minPrice) {
+			economyPrice.gte = parseInt(minPrice as string);
+		}
+
+		if (maxPrice) {
+			economyPrice.lte = parseInt(maxPrice as string);
+		}
+
+		const events = await prisma.event.findMany({
+			where: {
+				categories,
+				economyPrice,
+				eventStartTime,
+				locations,
+			},
+			include: {
+				galleries: true,
+				company: true,
+			},
+			orderBy: {
+				eventStartTime: "asc",
+			},
+		});
+
+		return res.status(200).json(events);
+	} catch (error) {
+		log(error);
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
+};
+
+const getPopularEvents = async (req: Request, res: Response) => {
+	try {
+		const events = await prisma.event.findMany({
+			orderBy: {
+				reviews: {
+					_count: "desc",
+				},
+			},
+			include: {
+				galleries: true,
+				company: true,
+			},
+			take: 10,
+		});
+
+		return res.status(200).json(events);
+	} catch (error) {
+		log(error);
+		return res.status(500).json({ message: "internal server error" });
+	}
+};
+
 export const eventController = {
 	addEvent,
 	editEvent,
@@ -357,4 +457,6 @@ export const eventController = {
 	getEventDetails,
 	getUserEvents,
 	searchEvent,
+	filterEvents,
+	getPopularEvents,
 };

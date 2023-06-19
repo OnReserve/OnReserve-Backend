@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import { PrismaClient, Profile } from "@prisma/client";
 import { uploadImage } from "../Utils/cloudinary.js";
 import { IProfileFiles } from "../Types/profile.js";
+import jwt from "jsonwebtoken";
+import { secret } from "./Auth/login.controller.js";
 
 const prisma = new PrismaClient();
 
@@ -99,18 +101,6 @@ async function editProfile(req: Request, res: Response) {
       return res.status(200).json(rest);
     }
 
-    if (lname && fname) {
-      const user = await prisma.user.update({
-        where: {
-          id: userID,
-        },
-        data: {
-          lname: lname,
-          fname: fname,
-        },
-      });
-    }
-
     const updatedProfile: any = await prisma.profile.update({
       where: {
         userId: userID,
@@ -130,7 +120,10 @@ async function editProfile(req: Request, res: Response) {
       updatedProfile;
     const { password, emailVerifiedAt, rememberToken, ...final } = rest.user;
     delete rest.user;
-    rest = { ...final, ...rest };
+
+    const accessToken = jwt.sign({ userId: id }, secret);
+
+    rest = { ...final, ...rest, token: accessToken };
 
     return res.status(200).json(rest);
   } catch (error) {

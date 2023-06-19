@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `Event` MODIFY `desc` LONGTEXT NOT NULL;
