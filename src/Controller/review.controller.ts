@@ -11,7 +11,7 @@ const addReview = async (req: Request, res: Response) => {
 		if (!comment || !stars) {
 			return res
 				.status(400)
-				.json({ message: "Please Provide all neccesary infos" });
+				.json({ message: "Please Provide all necessary infos" });
 		}
 
 		const event = await prisma.event.findUnique({
@@ -22,6 +22,19 @@ const addReview = async (req: Request, res: Response) => {
 
 		if (!event) {
 			return res.status(404).json({ message: "Event not found" });
+		}
+
+		const alreadyReviewed = await prisma.eventReview.count({
+			where: {
+				userId: user_id,
+				eventId: user_id,
+			},
+		});
+
+		if (alreadyReviewed) {
+			return res
+				.status(403)
+				.json({ message: "You've Already Reviewed, Thank you" });
 		}
 
 		const review = await prisma.eventReview.create({

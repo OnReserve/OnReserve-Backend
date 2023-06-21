@@ -84,7 +84,7 @@ router.delete("/company/:id", companyController.deleteCompany);
 router.get("/bookings", bookingController.getBookings); // Get all bookings, or get bookings by category
 router.post("/booking/add", bookingController.addBooking);
 router.get("/booking/:id", bookingController.getBookingDetails);
-router.put("/booking/:id");
+router.put("/booking/", bookingController.checkBooking);
 
 // Category Routes
 
