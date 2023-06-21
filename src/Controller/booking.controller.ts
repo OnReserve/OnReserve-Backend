@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { generateRandomToken } from "../Utils/qr_generator.js";
 import QRCode from "qrcode";
 import { uploadQR } from "../Utils/cloudinary.js";
+import { log } from "console";
 
 const prisma = new PrismaClient();
 const addBooking = async (req: Request, res: Response) => {
@@ -109,4 +110,76 @@ const getBookingDetails = async (req: Request, res: Response) => {
 	}
 };
 
-export const bookingController = { addBooking, getBookings, getBookingDetails };
+const checkBooking = async (req: Request, res: Response) => {
+	try {
+		const { bookingToken, user_id } = req.body;
+
+		if (!bookingToken) {
+			return res.status(400).json({ message: "Booking Token Not Found" });
+		}
+
+		const booking = await prisma.booking.findFirst({
+			where: {
+				bookingToken,
+			},
+			include: {
+				event: {
+					select: {
+						company: {
+							select: {
+								users: {
+									select: {
+										userId: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+
+		if (!booking) {
+			return res.status(400).json({ message: "Invalid Booking Token" });
+		}
+
+		if (booking.completed) {
+			return res
+				.status(400)
+				.json({ message: "Booking already checked out" });
+		}
+
+		const adminIDs = booking.event.company.users.map(
+			(_admin) => _admin.userId
+		);
+
+		if (adminIDs.indexOf(user_id) == -1) {
+			return res.status(403).json({
+				message: "You're not Authorized to check this ticket",
+			});
+		}
+
+		const updated = await prisma.booking.update({
+			where: {
+				id: booking.id,
+			},
+			data: {
+				completed: true,
+			},
+		});
+
+		return res
+			.status(200)
+			.json({ message: "Booking Successfully Checked" });
+	} catch (error) {
+		log(error);
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
+};
+
+export const bookingController = {
+	addBooking,
+	getBookings,
+	getBookingDetails,
+	checkBooking,
+};
