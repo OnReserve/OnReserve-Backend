@@ -5,10 +5,10 @@ import loginController from "../Controller/Auth/login.controller.js";
 import logoutController from "../Controller/Auth/logout.controller.js";
 import { companyController } from "../Controller/company.controller.js";
 import {
-	companyFilesMiddleware,
-	profileFilesMiddleware,
-	eventFilesMiddleware,
-	upload,
+  companyFilesMiddleware,
+  profileFilesMiddleware,
+  eventFilesMiddleware,
+  upload,
 } from "../Middleware/file.middleware.js";
 import { eventController } from "../Controller/events.controller.js";
 import { bookingController } from "../Controller/booking.controller.js";
@@ -43,10 +43,10 @@ router.use(auth);
 // Profile Routes
 router.get("/profile/:id", profileController.getProfile);
 router.post(
-	"/profile/:id",
-	profileFilesMiddleware,
-	auth,
-	profileController.editProfile
+  "/profile/:id",
+  profileFilesMiddleware,
+  auth,
+  profileController.editProfile
 );
 
 // Event Routes
@@ -64,18 +64,19 @@ router.delete("/event/ratings/:id", reviewController.deleteReview); // Delete a 
 // Companies Routes
 router.get("/companies", companyController.getUserCompanies); // Get all companies, or get companies by category
 router.post(
-	"/company/add",
-	companyFilesMiddleware,
-	auth,
-	companyController.addCompany
+  "/company/add",
+  companyFilesMiddleware,
+  auth,
+  companyController.addCompany
 );
 router.post("/company/:id/admins", companyController.addCompanyAdmin);
+router.delete("/company/:id/admins", companyController.removeCompanyAdmin);
 router.get("/company/:id", companyController.getCompany);
 router.put(
-	"/company/:id",
-	companyFilesMiddleware,
-	auth,
-	companyController.editCompany
+  "/company/:id",
+  companyFilesMiddleware,
+  auth,
+  companyController.editCompany
 ); // edit company
 router.get("/company/search/:keyword", companyController.searchCompany);
 router.delete("/company/:id", companyController.deleteCompany);
@@ -95,8 +96,8 @@ router.get("/admin/admins", adminController.getAdmins);
 router.post("/admin/admins", adminController.addAdmin);
 router.delete("/admin/admins/:id", adminController.removeAdmin);
 router.get(
-	"/admin/bookings/unapproved",
-	adminController.getAllUnapprovedTickets
+  "/admin/bookings/unapproved",
+  adminController.getAllUnapprovedTickets
 );
 router.put(`/admin/booking/:id`, adminController.approveTicket);
 router.post("/category/add", categoryController.addCategory);
