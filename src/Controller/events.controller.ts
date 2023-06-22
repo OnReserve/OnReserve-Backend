@@ -353,8 +353,17 @@ const getUserEvents = async (req: Request, res: Response) => {
 
 const filterEvents = async (req: Request, res: Response) => {
   try {
-    const { category, from, until, city, venue, minPrice, maxPrice } =
-      req.query;
+    const {
+      type,
+      keyword,
+      category,
+      from,
+      until,
+      city,
+      venue,
+      minPrice,
+      maxPrice,
+    } = req.query;
 
     let categoryId: number;
     let categories: any;
@@ -407,6 +416,9 @@ const filterEvents = async (req: Request, res: Response) => {
 
     const events = await prisma.event.findMany({
       where: {
+        title: {
+          contains: keyword as string,
+        },
         categories,
         economyPrice,
         eventStartTime,
