@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/app.ts",
   "scripts": {
-   "build": "pnpm dlx prisma generate && tsc",
+   "build": "pnpm install && pnpm dlx prisma generate && tsc",
     "preserve": "pnpm run build",
     "serve": "concurrently \"npx tsc -w\" \"nodemon dist/app.js\"",
     "prestart": "pnpm run build",
