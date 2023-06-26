@@ -112,13 +112,13 @@ model EventReview {
 }
 
 model Event {
-  id             Int             @id @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   userId         Int
   companyId      Int
   title          String
-  desc           String          @db.LongText
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  desc           String           @db.LongText
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   eventStartTime DateTime
   eventEndTime   DateTime
   eventDeadline  DateTime
@@ -128,14 +128,16 @@ model Event {
   economyPrice   Int
   vipSeats       Int
   vipPrice       Int
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company        Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  approver       User?           @relation("UserApprovedEvents", fields: [approvedBy], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company        Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  approver       User?            @relation("UserApprovedEvents", fields: [approvedBy], references: [id], onDelete: Cascade)
+  paid           Boolean          @default(false)
   categories     CategoryEvent[]
   galleries      EventGallery[]
   locations      EventLocation[]
   reviews        EventReview[]
   bookings       Booking[]
+  PaymentRequest PaymentRequest[]
 }
 
 model PersonalAccessToken {
@@ -193,6 +195,16 @@ model User {
   profile              Profile?
   passwordResets       PasswordReset[]
   personalAccessTokens PersonalAccessToken[]
+}
+
+model PaymentRequest {
+  id           Int     @id @default(autoincrement())
+  amount       Int
+  cbe_account  String
+  cbe_fullname String
+  paid         Boolean @default(false)
+  eventId      Int     @unique
+  event        Event   @relation(fields: [eventId], references: [id])
 }
 
 enum Roles {
