@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/app.ts",
   "scripts": {
-   "build": "tsc",
+   "build": "npm tsc",
     "preserve": "pnpm run build",
     "serve": "concurrently \"npx tsc -w\" \"nodemon dist/app.js\"",
     "prestart": "pnpm run build",
