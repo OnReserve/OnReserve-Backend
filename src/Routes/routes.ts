@@ -52,6 +52,7 @@ router.post(
 // Event Routes
 router.post("/event/add", eventFilesMiddleware, auth, eventController.addEvent);
 router.post("/event/:id", eventController.editEvent); // Edit
+router.get("/event/:id/payment", eventController.getEventPaymentInfo);
 router.delete("/event/:id", eventController.deleteEvent);
 router.get("/events/user", eventController.getUserEvents);
 

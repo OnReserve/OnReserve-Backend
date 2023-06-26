@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ICompanyFiles } from "../Types/company.js";
 import { uploadImage } from "../Utils/cloudinary.js";
 import { PrismaClient } from "@prisma/client";
+import { log } from "console";
 
 const prisma = new PrismaClient();
 
@@ -172,7 +173,26 @@ const getCompany = async (req: Request, res: Response) => {
 			return res.status(404).json({ message: "Company not found" });
 		}
 
-		return res.status(200).json(company);
+		const bookings = await prisma.booking.findMany({
+			where: {
+				event: {
+					companyId: company.id,
+				},
+				approved: true,
+			},
+			include: {
+				event: true,
+			},
+		});
+
+		let totalRevenue = 0;
+		bookings.forEach((_booking) => {
+			totalRevenue +=
+				_booking.vipCount * _booking.event.vipPrice +
+				_booking.economyCount * _booking.event.economySeats;
+		});
+
+		return res.status(200).json({ ...company, totalRevenue });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json("Internal error");
