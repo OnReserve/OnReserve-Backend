@@ -1,6 +1,7 @@
 datasource db {
   provider = "mysql"
-  url      = "mysql://kiiloleecom_admin:database$password@198.244.229.140:3306/kiiloleecom_api"
+  url      = "mysql://77qqb0uapsq83hce31eq:pscale_pw_5t7EwcGl9kfIV0M1f7OhfMeKN6dyX6vppWpyUF7tmTT@aws.connect.psdb.cloud/onreserve?ssl={\"rejectUnauthorized\":true}"
+  // url      = "mysql://kiiloleecom_admin:database$password@198.244.229.140:3306/kiiloleecom_api"
 }
 
 generator client {
