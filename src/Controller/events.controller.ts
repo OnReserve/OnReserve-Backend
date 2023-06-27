@@ -462,57 +462,62 @@ const getPopularEvents = async (req: Request, res: Response) => {
 };
 
 const getEventPaymentInfo = async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const { user_id } = req.body;
+	try {
+		const { id } = req.params;
+		const { user_id } = req.body;
 
-	if (!id) {
-		return res.status(404).json({ message: "Event ID not found" });
+		if (!id) {
+			return res.status(404).json({ message: "Event ID not found" });
+		}
+
+		const event = await prisma.event.findFirst({
+			where: {
+				id: parseInt(id),
+			},
+		});
+
+		if (!event) {
+			return res.status(404).json({ message: "Event not found" });
+		}
+
+		let start = new Date(event.eventEndTime).getTime();
+		let today = new Date().getTime();
+
+		if (today < start) {
+			return res.status(403).json({ message: "Event have to be ended" });
+		}
+
+		if (user_id != event.userId) {
+			return res.status(403).json({ message: "You are not authorized" });
+		}
+
+		const bookings = await prisma.booking.findMany({
+			where: {
+				eventId: event.id,
+				approved: true,
+			},
+		});
+
+		let totalRevenue = 0;
+		let economyCount = 0;
+		let vipCount = 0;
+		bookings.forEach((_booking) => {
+			totalRevenue +=
+				_booking.economyCount * event.economyPrice +
+				_booking.vipCount * event.vipPrice;
+			economyCount += _booking.economyCount;
+			vipCount += _booking.vipCount;
+		});
+
+		return res.status(200).json({
+			vipCount,
+			economyCount,
+			totalRevenue,
+		});
+	} catch (error) {
+		log(error);
+		return res.status(500).json({ message: "internal server error" });
 	}
-
-	const event = await prisma.event.findFirst({
-		where: {
-			id: parseInt(id),
-		},
-	});
-
-	if (!event) {
-		return res.status(404).json({ message: "Event not found" });
-	}
-
-	let start = new Date(event.eventEndTime).getTime();
-	let today = new Date().getTime();
-
-	if (today < start) {
-		return res.status(403).json({ message: "Event have to be ended" });
-	}
-
-	if (user_id != event.userId) {
-		return res.status(403).json({ message: "You are not authorized" });
-	}
-
-	const bookings = await prisma.booking.findMany({
-		where: {
-			eventId: event.id,
-			approved: true,
-		},
-	});
-
-	let totalRevenue = 0;
-	let economyCount = 0;
-	let vipCount = 0;
-	bookings.forEach((_booking) => {
-		totalRevenue +=
-			_booking.economyCount * event.economyPrice +
-			_booking.vipCount * event.vipPrice;
-		economyCount += _booking.economyCount;
-		vipCount += _booking.vipCount;
-	});
-
-	return res.status(200).json({
-		vipCount,
-		economyCount,
-		totalRevenue,
-	});
 };
 
 export const eventController = {

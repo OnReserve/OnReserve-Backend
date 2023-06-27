@@ -172,6 +172,8 @@ const approveTicket = async (req: Request, res: Response) => {
 	}
 };
 
+const getPaymentRequests = (req: Request, res: Response) => {};
+
 export const adminController = {
 	getStat,
 	getAdmins,
