@@ -492,6 +492,12 @@ const getEventPaymentInfo = async (req: Request, res: Response) => {
 		return res.status(403).json({ message: "You are not authorized" });
 	}
 
+	const requestCheck = await prisma.paymentRequest.findFirst({
+		where: {
+			eventId: event.id,
+		},
+	});
+
 	const bookings = await prisma.booking.findMany({
 		where: {
 			eventId: event.id,
@@ -510,10 +516,99 @@ const getEventPaymentInfo = async (req: Request, res: Response) => {
 		vipCount += _booking.vipCount;
 	});
 
+	if (requestCheck) {
+		return res.status(200).json({
+			message:
+				"Payment already Requested, please wait patiently until the admin approves",
+			requested: true,
+			data: requestCheck,
+			stat: {
+				vipCount,
+				economyCount,
+				totalRevenue,
+			},
+		});
+	}
+
 	return res.status(200).json({
 		vipCount,
 		economyCount,
 		totalRevenue,
+	});
+};
+
+const requestEventPayment = async (req: Request, res: Response) => {
+	const { id } = req.params;
+	const { user_id, cbeAccountNo, cbeFullName } = req.body;
+
+	if (!id || !cbeAccountNo || !cbeFullName) {
+		return res.status(400).json({ message: "Incomplete Form" });
+	}
+
+	const event = await prisma.event.findFirst({
+		where: {
+			id: parseInt(id),
+		},
+	});
+
+	if (!event) {
+		return res.status(404).json({ message: "Event not found" });
+	}
+
+	let start = new Date(event.eventEndTime).getTime();
+	let today = new Date().getTime();
+
+	if (today < start) {
+		return res.status(403).json({ message: "Event have to be ended" });
+	}
+
+	if (user_id != event.userId) {
+		return res.status(403).json({ message: "You are not authorized" });
+	}
+
+	const requestCheck = await prisma.paymentRequest.findFirst({
+		where: {
+			eventId: event.id,
+		},
+	});
+
+	if (requestCheck) {
+		return res.status(405).json({
+			message:
+				"Payment already Request, please wait patiently until the admin approves",
+		});
+	}
+
+	const bookings = await prisma.booking.findMany({
+		where: {
+			eventId: event.id,
+			approved: true,
+		},
+	});
+
+	let totalRevenue = 0;
+	let economyCount = 0;
+	let vipCount = 0;
+	bookings.forEach((_booking) => {
+		totalRevenue +=
+			_booking.economyCount * event.economyPrice +
+			_booking.vipCount * event.vipPrice;
+		economyCount += _booking.economyCount;
+		vipCount += _booking.vipCount;
+	});
+
+	const paymentRequest = await prisma.paymentRequest.create({
+		data: {
+			eventId: parseInt(id),
+			cbe_account: cbeAccountNo,
+			cbe_fullname: cbeFullName,
+			amount: totalRevenue,
+		},
+	});
+
+	return res.status(200).json({
+		message:
+			"Payment Requested, Please Patiently wait until the admin approves",
 	});
 };
 
@@ -528,4 +623,5 @@ export const eventController = {
 	filterEvents,
 	getPopularEvents,
 	getEventPaymentInfo,
+	requestEventPayment,
 };
