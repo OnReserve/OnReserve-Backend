@@ -105,5 +105,7 @@ router.put(`/admin/booking/:id`, adminController.approveTicket);
 router.post("/category/add", categoryController.addCategory);
 router.put("/category/:id", categoryController.updateCategory);
 router.delete("/category/:id", categoryController.deleteCategory);
+router.get(`/admin/payment-requests`, adminController.getPaymentRequests);
+router.post(`/admin/payment-requests`, adminController.approvePaymentRequest);
 
 export default router;

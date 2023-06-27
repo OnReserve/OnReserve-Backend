@@ -172,6 +172,54 @@ const approveTicket = async (req: Request, res: Response) => {
 	}
 };
 
+const getPaymentRequests = async (req: Request, res: Response) => {
+	try {
+		const requests = await prisma.paymentRequest.findMany({
+			where: {
+				paid: false,
+			},
+		});
+
+		return res.status(200).json(requests);
+	} catch (e) {
+		log(e);
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
+};
+
+const approvePaymentRequest = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.body;
+		if (!id) {
+			return res.status(400).json({ message: "Id not found" });
+		}
+
+		const request = await prisma.paymentRequest.findFirst({
+			where: {
+				id: parseInt(id),
+			},
+		});
+
+		if (!request) {
+			return res.status(400).json({ message: "Request Not found" });
+		}
+
+		await prisma.paymentRequest.update({
+			where: {
+				id: request.id,
+			},
+			data: {
+				paid: true,
+			},
+		});
+
+		return res.status(200).json({ message: "Approved Successfully" });
+	} catch (e) {
+		log(e);
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
+};
+
 export const adminController = {
 	getStat,
 	getAdmins,
@@ -179,4 +227,6 @@ export const adminController = {
 	removeAdmin,
 	getAllUnapprovedTickets,
 	approveTicket,
+	approvePaymentRequest,
+	getPaymentRequests,
 };
