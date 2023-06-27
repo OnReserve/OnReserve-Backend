@@ -1,6 +1,6 @@
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:@localhost:3306/onreserve"
+  url      = "mysql://kiiloleecom_admin:database$password@198.244.229.140:3306/kiiloleecom_api"
 }
 
 generator client {

@@ -5,8 +5,8 @@
   "type": "module",
   "main": "src/app.ts",
   "scripts": {
-    "build": "pnpm install && npx prisma migrate deploy && tsc",
-    "preserve": "pnpm run build",
+    "install": "pnpm install",
+    "build": "npx prisma migrate deploy && tsc",
     "serve": "concurrently \"npx tsc -w\" \"nodemon dist/app.js\"",
     "start": "node dist/app.js"
   },
